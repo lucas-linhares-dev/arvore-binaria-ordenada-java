@@ -38,7 +38,7 @@ public class ArvoreBinariaOrdenada<TIPO extends Comparable> {
 				}
 				else {
 					if(atual.getDireita() != null) {
-						atual = atual.getDireita();
+						atual = atual.getDireita();	
 					}
 					else {
 						atual.setDireita(novoElemento);
@@ -79,9 +79,8 @@ public class ArvoreBinariaOrdenada<TIPO extends Comparable> {
 		Elemento<TIPO> atual = this.raiz;
 		Elemento<TIPO> paiAtual = null;
 		
-		while(atual != null) {
+		while(atual != null) { // Encontrando atual
 			if(valor.equals(atual.getValor())) {
-				// Remover
 				break;
 			}
 			else if(valor.compareTo(atual.getValor()) == -1) {
@@ -93,10 +92,96 @@ public class ArvoreBinariaOrdenada<TIPO extends Comparable> {
 				atual = atual.getDireita();
 			}
 		}
+		
 		// REMOÇÃO
 		if(atual != null) {
 			
+			if(atual.getDireita() != null) { // Tem dois filhos ou filho a direita
+				
+				Elemento<TIPO> substituto = atual.getDireita();
+                Elemento<TIPO> paiSubstituto = atual;
+                while(substituto.getEsquerda() != null){
+                    paiSubstituto = substituto;
+                    substituto = substituto.getEsquerda();
+                }
+                
+                substituto.setEsquerda(atual.getEsquerda()); // Pulo do gato - Passar arvore a esquerda do atual para o substituto
+                
+                if (paiAtual != null){
+                    if (atual.getValor().compareTo(paiAtual.getValor()) == -1){ //atual < paiAtual
+                        paiAtual.setEsquerda(substituto);
+                    }
+                    else{
+                        paiAtual.setDireita(substituto);
+                    }
+                }
+                else{ //se não tem paiAtual, então é a raiz
+                    this.raiz = substituto;
+                    paiSubstituto.setEsquerda(null);
+                    this.raiz.setDireita(paiSubstituto);
+                    this.raiz.setEsquerda(atual.getEsquerda());
+                }
+                
+                //remove o elemento da árvore
+                if (substituto.getValor().compareTo(paiSubstituto.getValor()) == -1){ //substituto < paiSubstituto
+                    paiSubstituto.setEsquerda(null);
+                }
+                else{
+                    paiSubstituto.setDireita(null);
+                }
+				
+			}
+			
+			else if(atual.getEsquerda() != null) { // Filho só a esquerda
+				Elemento<TIPO> substituto = atual.getEsquerda();
+				Elemento<TIPO> paiSubstituto = atual;
+				
+				while(substituto.getDireita() != null) {
+					paiSubstituto = substituto;
+					substituto = substituto.getDireita();
+				}
+				
+				if (paiAtual != null){
+                    if (atual.getValor().compareTo(paiAtual.getValor()) == -1){ //atual < paiAtual
+                        paiAtual.setEsquerda(substituto);
+                    }
+                    else{
+                        paiAtual.setDireita(substituto);
+                    }
+                }
+				else{ //se for a raiz
+                    this.raiz = substituto;
+                }
+                
+                //removeu o elemento da árvore
+                if (substituto.getValor().compareTo(paiSubstituto.getValor()) == -1){ //substituto < paiSubstituto
+                    paiSubstituto.setEsquerda(null);
+                }
+                else{
+                    paiSubstituto.setDireita(null);
+                }
+				
+					
+			}
+			else { 	// Nao tem filho
+				if (paiAtual != null){
+                    if (atual.getValor().compareTo(paiAtual.getValor()) == -1){ //atual < paiAtual
+                        paiAtual.setEsquerda(null);
+                    }
+                    else{
+                        paiAtual.setDireita(null);
+                    }
+                }
+				else{ //é a raiz
+                    this.raiz = null;
+                }
+			}
+			
+			return true;
 		}
-		return (atual != null);
+		else {
+			return false;
+		}
 	}
+	
 }
